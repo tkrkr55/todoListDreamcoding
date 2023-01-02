@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
-import AddTodo from '../AddTodo/AddTodo'
+import Todo from '../Todo/Todo'
+import TodoAdd from '../TodoAdd/TodoAdd'
 
 
-export default function TodoList() {
+
+export default function TodoList({list}) {
   const[todos,setTodos] = useState([
     {
       id:1,
@@ -15,16 +17,33 @@ export default function TodoList() {
       status:'active'
     }
   ])
-  const handleAdd = (todo) => setTodos([...todos,todo])
+  const itemList = (todo)=>{setTodos([...todos,todo])}
+  const handleUpdate = (Update)=>{setTodos(todos.map((t)=>(t.id === Update.id?Update:t)))}
+  const handleDelete = (Delete)=>{setTodos(todos.filter((t)=>t.id !== Delete.id))}
+  
+  const listed = getFilteredItems(todos,list)
   return (
     <section>
       <ul>
         {
-          todos.map(item => <li key={item.id}>{item.text}</li>)
+          listed.map((item)=>(
+          <Todo key={item.id} todo={item}
+          onUpdate={handleUpdate}
+          onDelete={handleDelete}
+          />
+          ))
         }
       </ul>
-      <AddTodo onAdd={handleAdd}/>
+      <TodoAdd onAdd={itemList}/>      
     </section>
     
   )
+}
+
+function getFilteredItems(todos,list){
+  if(list ==='all'){
+    return todos;
+
+  }
+  return todos.filter((todo)=> todo.status === list)
 }
